@@ -50,28 +50,30 @@ const workers = [...Array(NUM_OF_WORKERS).keys()].map((i) => {
   const scriptUrl = import.meta.url;
 
   const workerUrl = addPathToUrl("./TranspileWorker.js", scriptUrl);
-  const whenWorker = fetch(workerUrl)
-    .then((rs) => rs.text())
-    .then((workerCode) => {
-      const scriptBlobUrl = window.URL.createObjectURL(
-        new Blob([workerCode], { type: "text/javascript" }),
-      );
-      return new Worker(
-        scriptBlobUrl + "#" + new URLSearchParams({ workerUrl }),
-        { type: "module" },
-      );
-    })
-    .then((worker) => {
-      return new Promise((resolve, reject) => {
-        worker.onmessage = ({ data }) => {
-          if (data.messageType === "ready") {
-            resolve(worker);
-          } else {
-            reject(eventToError(data, "Worker #" + i));
-          }
-        };
-      });
+  console.log("workerUrl:", workerUrl);
+
+  const whenWorker = Promise.resolve(
+    new Worker(workerUrl + "#" + new URLSearchParams({ workerUrl }), {
+      type: "module",
+    }),
+  ).then((worker) => {
+    console.log("Worker created:", worker);
+    return new Promise((resolve, reject) => {
+      worker.onmessage = ({ data }) => {
+        if (data.messageType === "ready") {
+          console.log("Worker #" + i + " is ready");
+          resolve(worker);
+        } else {
+          console.log("Worker #" + i + " failed to start");
+          reject(eventToError(data, "Worker #" + i));
+        }
+      };
+      worker.onerror = (error) => {
+        console.error("Worker #" + i + " error:", error);
+        reject(error);
+      };
     });
+  });
 
   let lastReferenceId = 0;
   const referenceIdToCallback = new Map();

@@ -1,7 +1,7 @@
 <html>
     <body>
         <p>Tests in progress...</p>
-        <script type="module">
+        <!-- <script type="module">
             import { testCases, test } from "./UrlPathResolverTest.js";
             const testedPromises = testCases.map(test);
             Promise.all(testedPromises)
@@ -10,9 +10,9 @@
                     console.error(exc);
                     alert("Got errors, see console - " + exc);
                 });
-        </script>
+        </script> -->
         <script type="module">
-            import { loadModule } from "https://klesun.github.io/ts-browser/src/ts-browser.js";
+            import { loadModule } from "https://oriun.github.io/ts-browser/ts-browser.js";
             // language=file-reference
             const entryScriptPath = "./index.ts";
             loadModule(entryScriptPath);

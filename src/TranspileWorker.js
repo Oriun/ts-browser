@@ -1,31 +1,18 @@
-import ts from "https://unpkg.com/typescript@5.8.2/lib/typescript.js";
-globalThis.ts = ts;
-
-const workerPramsStr = location.hash.replace(/^#/, "");
-const workerParams = workerPramsStr ? new URLSearchParams(workerPramsStr) : {};
-const workerUrl =
-  workerParams.get("workerUrl") ||
-  "https://klesun.github.io/ts-browser/src/TranspileWorker.js";
-const workerPath = workerUrl.replace(/\/[^/]+$/, "/");
+console.log("transpileWorker");
+import ts from "https://esm.sh/typescript@5.8.2";
+import { addPathToUrl } from "https://oriun.github.io/ts-browser/UrlPathResolver_sideEffects.js";
+import { ParseTsModule_sideEffects } from "https://oriun.github.io/ts-browser/actions/ParseTsModule_sideEffects.js";
 
 const main = () => {
-  self.importScripts(
-    workerPath + "/UrlPathResolver_sideEffects.js",
-    workerPath + "/actions/ParseTsModule_sideEffects.js",
-  );
-  const org = self.org;
-  /** @type {ts} */
-  const ts = self.ts;
-
   const onmessage = (evt) => {
     const { data } = evt;
     const { messageType, messageData, referenceId } = data;
     if (messageType === "parseTsModule") {
       const { isJsSrc, staticDependencies, dynamicDependencies, getJsCode } =
-        org.klesun.tsBrowser.ParseTsModule_sideEffects({
+        ParseTsModule_sideEffects({
           ...messageData,
           ts: ts,
-          addPathToUrl: org.klesun.tsBrowser.addPathToUrl,
+          addPathToUrl: addPathToUrl,
         });
       self.postMessage({
         messageType: "parseTsModule_deps",
@@ -45,6 +32,7 @@ const main = () => {
     try {
       onmessage(evt);
     } catch (exc) {
+      console.error(exc);
       self.postMessage({
         messageType: "error",
         messageData: {
@@ -58,11 +46,13 @@ const main = () => {
 };
 
 try {
+  console.log("ready");
   main();
   self.postMessage({
     messageType: "ready",
   });
 } catch (exc) {
+  console.error(exc);
   self.postMessage({
     messageType: "error",
     messageData: {

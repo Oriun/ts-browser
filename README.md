@@ -8,7 +8,7 @@ Usage: ([sample project](https://klesun.net/entry/midiana/))
 ```html
 <!-- index.html -->
 <script type="module">
-    import {loadModule} from 'https://klesun.github.io/ts-browser/src/ts-browser.js';
+    import {loadModule} from 'https://oriun.github.io/ts-browser/ts-browser.js';
     // language=file-reference
     const entryScriptPath = './index.ts';
     loadModule(entryScriptPath).then(indexModule => {
@@ -33,7 +33,7 @@ https://klesun-misc.github.io/ts-browser-react-example/
 
 ```html
 <script type="module">
-    import {loadModule} from 'https://klesun.github.io/ts-browser/src/ts-browser.js';
+    import {loadModule} from 'https://oriun.github.io/ts-browser/ts-browser.js';
     // language=file-reference
     const entryScriptPath = './app.tsx';
     loadModule(entryScriptPath, {
@@ -44,7 +44,7 @@ https://klesun-misc.github.io/ts-browser-react-example/
 
 ________________
 
-I highly recommend you to also use the [@typescript-eslint/consistent-type-imports](https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/docs/rules/consistent-type-imports.md) eslint rule to make sure that no redundant http requests will be performed for type-only imports 
+I highly recommend you to also use the [@typescript-eslint/consistent-type-imports](https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/docs/rules/consistent-type-imports.md) eslint rule to make sure that no redundant http requests will be performed for type-only imports
 
 If you are using `.tsx` and the load speed is more important than compatibility with plain `tsc` emit for you, then I also suggest to set [`allowImportingTsExtensions`](https://www.typescriptlang.org/tsconfig/#allowImportingTsExtensions) to `true` in `compilerOptions` of your `tsconfig.json` and to install [`eslint-plugin-import`](https://github.com/import-js/eslint-plugin-import) with following configuration:
 ```json
