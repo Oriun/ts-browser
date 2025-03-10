@@ -52,28 +52,31 @@ const workers = [...Array(NUM_OF_WORKERS).keys()].map((i) => {
   const workerUrl = addPathToUrl("./TranspileWorker.js", scriptUrl);
   console.log("workerUrl:", workerUrl);
 
-  const whenWorker = Promise.resolve(
-    new Worker(workerUrl + "#" + new URLSearchParams({ workerUrl }), {
-      type: "module",
-    }),
-  ).then((worker) => {
-    console.log("Worker created:", worker);
-    return new Promise((resolve, reject) => {
-      worker.onmessage = ({ data }) => {
-        if (data.messageType === "ready") {
-          console.log("Worker #" + i + " is ready");
-          resolve(worker);
-        } else {
-          console.log("Worker #" + i + " failed to start");
-          reject(eventToError(data, "Worker #" + i));
-        }
-      };
-      worker.onerror = (error) => {
-        console.error("Worker #" + i + " error:", error);
-        reject(error);
-      };
+  const whenWorker = fetch(
+    "https://oriun.github.io/ts-browser/TranspileWorker.js",
+  )
+    .then((response) => response.text())
+    .then((workerCode) => {
+      const blob = new Blob([workerCode], { type: "application/javascript" });
+      const blobURL = URL.createObjectURL(blob);
+      const worker = new Worker(blobURL, { type: "module" });
+      console.log("Worker created:", worker);
+      return new Promise((resolve, reject) => {
+        worker.onmessage = ({ data }) => {
+          if (data.messageType === "ready") {
+            console.log("Worker #" + i + " is ready");
+            resolve(worker);
+          } else {
+            console.log("Worker #" + i + " failed to start");
+            reject(eventToError(data, "Worker #" + i));
+          }
+        };
+        worker.onerror = (error) => {
+          console.error("Worker #" + i + " error:", error);
+          reject(error);
+        };
+      });
     });
-  });
 
   let lastReferenceId = 0;
   const referenceIdToCallback = new Map();
