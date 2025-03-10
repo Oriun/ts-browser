@@ -53,7 +53,9 @@ const workers = [...Array(NUM_OF_WORKERS).keys()].map((i) => {
   const whenWorker = fetch(workerUrl)
     .then((rs) => rs.text())
     .then((workerCode) => {
-      const scriptBlobUrl = window.URL.createObjectURL(new Blob([workerCode]));
+      const scriptBlobUrl = window.URL.createObjectURL(
+        new Blob([workerCode], { type: "text/javascript" }),
+      );
       return new Worker(
         scriptBlobUrl + "#" + new URLSearchParams({ workerUrl }),
         { type: "module" },
