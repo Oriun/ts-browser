@@ -1,4 +1,3 @@
-console.log("transpileWorker");
 import ts from "https://esm.sh/typescript@5.8.2";
 import { addPathToUrl } from "https://oriun.github.io/ts-browser/UrlPathResolver_sideEffects.js";
 import { ParseTsModule_sideEffects } from "https://oriun.github.io/ts-browser/actions/ParseTsModule_sideEffects.js";
@@ -46,7 +45,6 @@ const main = () => {
 };
 
 try {
-  console.log("ready");
   main();
   self.postMessage({
     messageType: "ready",

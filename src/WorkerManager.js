@@ -50,24 +50,18 @@ const workers = [...Array(NUM_OF_WORKERS).keys()].map((i) => {
   const scriptUrl = import.meta.url;
 
   const workerUrl = addPathToUrl("./TranspileWorker.js", scriptUrl);
-  console.log("workerUrl:", workerUrl);
 
-  const whenWorker = fetch(
-    "https://oriun.github.io/ts-browser/TranspileWorker.js",
-  )
+  const whenWorker = fetch(workerUrl)
     .then((response) => response.text())
     .then((workerCode) => {
       const blob = new Blob([workerCode], { type: "application/javascript" });
       const blobURL = URL.createObjectURL(blob);
       const worker = new Worker(blobURL, { type: "module" });
-      console.log("Worker created:", worker);
       return new Promise((resolve, reject) => {
         worker.onmessage = ({ data }) => {
           if (data.messageType === "ready") {
-            console.log("Worker #" + i + " is ready");
             resolve(worker);
           } else {
-            console.log("Worker #" + i + " failed to start");
             reject(eventToError(data, "Worker #" + i));
           }
         };
